@@ -1,122 +1,64 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from "react";
+import GuitarForm from "./components/GuitarForm";
+import GuitarTable from "./components/GuitarTable";
+import DetailCard from "./components/DetailCard";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [guitars, setGuitars] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [view, setView] = useState("form"); // "form" | "registry"
+
+  function handleAddGuitar(newGuitar) {
+    setGuitars((prev) => [...prev, newGuitar]);
+    setView("registry");
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <div className="min-h-screen bg-parchment px-4 py-10">
+      <header className="mx-auto mb-8 flex max-w-5xl items-center justify-between">
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <p className="font-display text-2xl font-semibold">Ledger & String</p>
+          <p className="text-sm text-walnut/60">Guitar Store Inventory Manager</p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        <nav className="flex gap-2 text-sm">
+          <TabButton active={view === "form"} onClick={() => setView("form")}>
+            Register
+          </TabButton>
+          <TabButton active={view === "registry"} onClick={() => setView("registry")}>
+            Registry ({guitars.length})
+          </TabButton>
+        </nav>
+      </header>
 
-      <div className="ticks"></div>
+      <main className="mx-auto max-w-5xl">
+        {view === "form" && <GuitarForm onAddGuitar={handleAddGuitar} />}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {view === "registry" && (
+          <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
+            <GuitarTable
+              guitars={guitars}
+              selectedId={selectedId}
+              onSelectRow={setSelectedId}
+            />
+            <DetailCard guitars={guitars} selectedId={selectedId} />
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
 
-export default App
+function TabButton({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`border px-4 py-1.5 ${
+        active
+          ? "border-saddle bg-saddle text-parchment"
+          : "border-walnut/20 text-walnut/70 hover:border-saddle"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
